@@ -1,0 +1,132 @@
+cài đặt giải thuật sắp xếp nahnh để sắp xếp danh sách các tỉnh tahfnh phố theo dan sô giảm dần, mỗi tỉnh có thông tin về tỉnh, diện tích, dân số.danh sách n tỉnh đọc từ mảng động từ tệp văn barmn tinh.txt đưa ra màn hình danh ách các tỉnh ban đầu và sau khi xắp sếp
+
+
+
+
+//Ho ten: Le Tuan Tu 
+//MaSV: 652231
+//Lop: K65CNPMA
+//De: 33
+/*
+Bài 33(thctdlgtbai33.cpp). Cài đặt giải thuật sắp xếp nhanh để sắp xếp
+danh sách các tỉnh/thành phố theo dân số giảm dần.
+Mỗi tỉnh có thông tin: tên tỉnh, diện tích, dân số.
+Danh sách n tỉnh được đọc từ tệp văn bản 'tinh.txt' vào mảng động.
+Đưa ra màn hình danh sách ban đầu và danh sách sau khi sắp xếp.
+*/
+
+#include<iostream>
+#include<fstream>
+#include<stdio.h>
+#include<iomanip>
+
+using namespace std;
+
+//Khai bao cau truc tinh/thanh pho
+struct Tinh
+{
+    string tenTinh;
+    float dienTich;
+    int danSo;
+};
+
+//Khai bao ham
+void nhapDS(Tinh *&a,int &n);
+void hienDS(Tinh *a,int n);
+void quickSort(Tinh *a,int left,int right);
+
+//===chuong trinh chinh===
+int main()
+{
+    //Khai bao mang dong
+    Tinh *a;
+    int n;
+
+    //Nhap danh sach tinh tu tep
+    nhapDS(a,n);
+
+    //Dua ra danh sach ban dau
+    cout<<"Danh sach tinh/thanh pho ban dau:\n";
+    hienDS(a,n);
+
+    //Sap xep nhanh theo dan so giam dan
+    quickSort(a,0,n-1);
+
+    //Dua ra danh sach sau sap xep
+    cout<<"\nDanh sach sau khi sap xep theo dan so giam dan:\n";
+    hienDS(a,n);
+
+    cout<<endl;
+    return 0;
+}
+
+//===dinh nghia ham===
+
+//Ham nhap danh sach tinh tu tep
+void nhapDS(Tinh *&a,int &n)
+{
+    ifstream fin("tinh.txt");
+
+    //Doc so luong tinh
+    fin>>n;
+    fin.ignore();
+
+    //Cap phat mang dong
+    a = new Tinh[n];
+
+    //Doc du lieu tung tinh
+    for(int i=0;i<n;i++)
+    {
+        getline(fin,a[i].tenTinh);
+        fin>>a[i].dienTich;
+        fin>>a[i].danSo;
+        fin.ignore();
+    }
+}
+
+//Ham hien thi danh sach
+void hienDS(Tinh *a,int n)
+{
+    cout<<left<<setw(25)<<"Ten tinh"
+        <<setw(15)<<"Dien tich"
+        <<setw(15)<<"Dan so"<<endl;
+
+    for(int i=0;i<n;i++)
+    {
+        cout<<left<<setw(25)<<a[i].tenTinh
+            <<setw(15)<<a[i].dienTich
+            <<setw(15)<<a[i].danSo<<endl;
+    }
+}
+
+//Ham sap xep nhanh
+void quickSort(Tinh *a,int left,int right)
+{
+    int i = left;
+    int j = right;
+
+    //Chon khoa giua
+    int x = a[(left+right)/2].danSo;
+
+    //Phan doan
+    while(i<=j)
+    {
+        while(a[i].danSo > x) i++;
+        while(a[j].danSo < x) j--;
+
+        if(i<=j)
+        {
+            //Hoan vi
+            Tinh tg = a[i];
+            a[i] = a[j];
+            a[j] = tg;
+
+            i++;
+            j--;
+        }
+    }
+
+    //De quy
+    if(left<j) quickSort(a,left,j);
+    if(i<right) quickSort(a,i,right);
+}
