@@ -1,0 +1,173 @@
+//Ho ten: Le Tuan Tu 
+//MaSV: 652231
+//Lop: K65CNPMA
+//De: 34
+/*
+Bài 34(thctdlgtbai34.cpp). Cài đặt và sử dụng danh sách liên kết kép
+có phần tử dữ liệu là kiểu cấu trúc mặt hàng.
+Mỗi mặt hàng có thông tin: tên hàng, số lượng, đơn giá.
+
+Sử dụng DSLKK cho bài toán:
+- Cho tệp 'mathang.txt' chứa danh sách n mặt hàng.
+- Đọc danh sách mặt hàng từ tệp lưu vào DSLKK theo thứ tự đọc vào.
+- Đưa danh sách mặt hàng trong DSLKK ra màn hình.
+- Tìm và đưa ra mặt hàng có số lượng nhỏ nhất.
+*/
+
+#include<iostream>
+#include<fstream>
+#include<stdio.h>
+
+using namespace std;
+
+//Khai bao cau truc mat hang
+struct MatHang
+{
+    string tenHang;
+    int soLuong;
+    float donGia;
+};
+
+//Khai bao cau truc node
+struct Node
+{
+    MatHang data;
+    Node *prev;
+    Node *next;
+};
+
+//Khai bao cau truc DSLKK
+struct DoubleList
+{
+    Node *head;
+    Node *tail;
+};
+
+//Khai bao ham
+void khoiTao(DoubleList &L);
+Node* taoNode(MatHang x);
+void themCuoi(DoubleList &L,MatHang x);
+void hienDS(DoubleList L);
+MatHang timMin(DoubleList L);
+
+//===chuong trinh chinh===
+int main()
+{
+    //Khai bao tep vao
+    ifstream fin("mathang.txt");
+
+    //Khai bao DSLK
+    DoubleList L;
+
+    //Khoi tao DSLK
+    khoiTao(L);
+
+    //Doc so luong mat hang
+    int n;
+    fin>>n;
+    fin.ignore();
+
+    //Doc du lieu tu tep vao DSLKK
+    for(int i=0;i<n;i++)
+    {
+        MatHang x;
+
+        getline(fin,x.tenHang);
+        fin>>x.soLuong;
+        fin>>x.donGia;
+        fin.ignore();
+
+        themCuoi(L,x);
+    }
+
+    //Dua danh sach ra man hinh
+    cout<<"Danh sach mat hang:\n";
+    hienDS(L);
+
+    //Tim mat hang co so luong nho nhat
+    MatHang minMH = timMin(L);
+
+    cout<<"\nMat hang co so luong nho nhat:\n";
+    cout<<minMH.tenHang<<endl;
+    cout<<minMH.soLuong<<endl;
+    cout<<minMH.donGia<<endl;
+
+    cout<<endl;
+    return 0;
+}
+
+//===dinh nghia ham===
+
+//Ham khoi tao DSLKK
+void khoiTao(DoubleList &L)
+{
+    L.head = NULL;
+    L.tail = NULL;
+}
+
+//Ham tao node
+Node* taoNode(MatHang x)
+{
+    Node *p = new Node;
+
+    p->data = x;
+    p->prev = NULL;
+    p->next = NULL;
+
+    return p;
+}
+
+//Ham them vao cuoi DSLKK
+void themCuoi(DoubleList &L,MatHang x)
+{
+    Node *p = taoNode(x);
+
+    //DSLK rong
+    if(L.head==NULL)
+    {
+        L.head = p;
+        L.tail = p;
+    }
+    else
+    {
+        L.tail->next = p;
+        p->prev = L.tail;
+        L.tail = p;
+    }
+}
+
+//Ham hien thi danh sach
+void hienDS(DoubleList L)
+{
+    Node *p = L.head;
+
+    while(p!=NULL)
+    {
+        cout<<p->data.tenHang<<endl;
+        cout<<p->data.soLuong<<endl;
+        cout<<p->data.donGia<<endl;
+        cout<<endl;
+
+        p = p->next;
+    }
+}
+
+//Ham tim mat hang co so luong nho nhat
+MatHang timMin(DoubleList L)
+{
+    Node *p = L.head;
+
+    MatHang minMH = p->data;
+
+    p = p->next;
+
+    while(p!=NULL)
+    {
+        if(p->data.soLuong < minMH.soLuong)
+            minMH = p->data;
+
+        p = p->next;
+    }
+
+    return minMH;
+}
