@@ -2,18 +2,6 @@
 //MaSV: 652231
 //Lop: K65CNPMA
 //De: 34
-Cài đặt và sử dụng danh sách liên kết kép có phần tử dữ liệu là kiểu cấu trúc mặt hàng. mỗi mặt hàng có thông tin về tên hàng số lượng đơn giá. sử dung dslkk đã cài đặt cho bài toán cho tệp mathang.txt chưa danh sach n mat hang; doc danh sách n mặt hàng từ tệp lưu vào dslkk theo thứu tự đọc vào từ tệp đưa danh sách mặt hàng tỏng dslkk ra màn hình tìm và đưa mặt hàng trong dslkk có sô lượng nhỏ nhất
-/*
-Bài 34(thctdlgtbai34.cpp). Cài đặt và sử dụng danh sách liên kết kép
-có phần tử dữ liệu là kiểu cấu trúc mặt hàng.
-Mỗi mặt hàng có thông tin: tên hàng, số lượng, đơn giá.
-
-Sử dụng DSLKK cho bài toán:
-- Cho tệp 'mathang.txt' chứa danh sách n mặt hàng.
-- Đọc danh sách mặt hàng từ tệp lưu vào DSLKK theo thứ tự đọc vào.
-- Đưa danh sách mặt hàng trong DSLKK ra màn hình.
-- Tìm và đưa ra mặt hàng có số lượng nhỏ nhất.
-*/
 
 #include<iostream>
 #include<fstream>
@@ -21,7 +9,7 @@ Sử dụng DSLKK cho bài toán:
 
 using namespace std;
 
-//Khai bao cau truc mat hang
+//Cau truc mat hang
 struct MatHang
 {
     string tenHang;
@@ -29,7 +17,7 @@ struct MatHang
     float donGia;
 };
 
-//Khai bao cau truc node
+//Node
 struct Node
 {
     MatHang data;
@@ -37,7 +25,7 @@ struct Node
     Node *next;
 };
 
-//Khai bao cau truc DSLKK
+//DSLKK
 struct DSLKK
 {
     Node *head;
@@ -45,104 +33,87 @@ struct DSLKK
 };
 
 //Khai bao ham
-void khoiTao(DSLKK &L);
-Node* taoNode(MatHang x);
-void themCuoi(DSLKK &L,MatHang x);
-void hienDS(DSLKK L);
-MatHang timMin(DSLKK L);
+void khoiTao(DSLKK &ds);
+Node* taoNode(MatHang mh);
+void themCuoi(DSLKK &ds,MatHang mh);
+void hienDS(DSLKK ds);
+MatHang timMin(DSLKK ds);
 
-//===chuong trinh chinh===
+//===MAIN===
 int main()
 {
-    //Khai bao tep vao
     ifstream fin("mathang.txt");
 
-    //Khai bao DSLK
-    DSLKK L;
+    DSLKK ds;
+    khoiTao(ds);
 
-    //Khoi tao DSLK
-    khoiTao(L);
-
-    //Doc so luong mat hang
     int n;
     fin>>n;
     fin.ignore();
 
-    //Doc du lieu tu tep vao DSLKK
     for(int i=0;i<n;i++)
     {
-        MatHang x;
+        MatHang mh;
 
-        getline(fin,x.tenHang);
-        fin>>x.soLuong;
-        fin>>x.donGia;
+        getline(fin,mh.tenHang);
+        fin>>mh.soLuong;
+        fin>>mh.donGia;
         fin.ignore();
 
-        themCuoi(L,x);
+        themCuoi(ds,mh);
     }
 
-    //Dua danh sach ra man hinh
     cout<<"Danh sach mat hang:\n";
-    hienDS(L);
+    hienDS(ds);
 
-    //Tim mat hang co so luong nho nhat
-    MatHang matHang = timMin(L);
+    MatHang mhMin = timMin(ds);
 
     cout<<"\nMat hang co so luong nho nhat:\n";
-    cout<<matHang.tenHang<<endl;
-    cout<<matHang.soLuong<<endl;
-    cout<<matHang.donGia<<endl;
+    cout<<mhMin.tenHang<<endl;
+    cout<<mhMin.soLuong<<endl;
+    cout<<mhMin.donGia<<endl;
 
-    cout<<endl;
     return 0;
 }
 
-//===dinh nghia ham===
+//===HAM===
 
-//Ham khoi tao DSLKK
-void khoiTao(DSLKK &L)
+void khoiTao(DSLKK &ds)
 {
-    L.head = NULL;
-    L.tail = NULL;
+    ds.head = NULL;
+    ds.tail = NULL;
 }
 
-//Ham tao node
-Node* taoNode(MatHang x)
+Node* taoNode(MatHang mh)
 {
     Node *p = new Node;
-
-    p->data = x;
+    p->data = mh;
     p->prev = NULL;
     p->next = NULL;
-
     return p;
 }
 
-//Ham them vao cuoi DSLKK
-void themCuoi(DSLKK &L,MatHang x)
+void themCuoi(DSLKK &ds,MatHang mh)
 {
-    Node *p = taoNode(x);
+    Node *p = taoNode(mh);
 
-    //DSLK rong
-    if(L.head==NULL)
+    if(ds.head == NULL)
     {
-        L.head = p;
-        L.tail = p;
+        ds.head = ds.tail = p;
     }
     else
     {
-        L.tail->next = p;
-        p->prev = L.tail;
-        L.tail = p;
+        ds.tail->next = p;
+        p->prev = ds.tail;
+        ds.tail = p;
     }
 }
 
-//Ham hien thi danh sach
-void hienDS(DSLKK L)
+void hienDS(DSLKK ds)
 {
-    Node *p = L.head;
+    Node *p = ds.head;
 
-    while(p!=NULL)
+    while(p != NULL)
     {
         cout<<p->data.tenHang<<endl;
         cout<<p->data.soLuong<<endl;
@@ -153,22 +124,20 @@ void hienDS(DSLKK L)
     }
 }
 
-//Ham tim mat hang co so luong nho nhat
-MatHang timSoLuongMatHang(DSLKK L)
+MatHang timMin(DSLKK ds)
 {
-    Node *p = L.head;
+    Node *p = ds.head;
 
-    MatHang matHang = p->data;
-
+    MatHang mhMin = p->data;
     p = p->next;
 
-    while(p!=NULL)
+    while(p != NULL)
     {
-        if(p->data.soLuong < matHang.soLuong)
-            matHang = p->data;
+        if(p->data.soLuong < mhMin.soLuong)
+            mhMin = p->data;
 
         p = p->next;
     }
 
-    return matHang;
+    return mhMin;
 }
