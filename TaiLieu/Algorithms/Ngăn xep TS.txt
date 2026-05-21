@@ -1,0 +1,152 @@
+//Ho ten: Le Tuan Tu 
+//MaSV: 652231
+//Lop: K65CNPMA
+//De: 35
+/*
+Bài 35(thctdlgtbai35.cpp). Cài đặt cây nhị phân tìm kiếm
+có phần tử dữ liệu là kiểu cấu trúc thí sinh.
+
+Mỗi thí sinh có thông tin:
+- Số báo danh
+- Họ tên
+- Giới tính
+- Điểm thi
+
+Sử dụng giải thuật đã cài đặt cho bài toán:
+- Tệp 'thisinh.txt' chứa danh sách n thí sinh có điểm thi tăng dần.
+- Đọc dữ liệu từ tệp lưu vào cây.
+- Đưa ra màn hình danh sách thí sinh nam theo thứ tự điểm thi giảm dần.
+*/
+
+#include<iostream>
+#include<fstream>
+#include<stdio.h>
+
+using namespace std;
+
+//Khai bao cau truc thi sinh
+struct ThiSinh
+{
+    string soBaoDanh;
+    string hoTen;
+    string gioiTinh;
+    float diemThi;
+};
+
+//Khai bao node cua cay
+struct Node
+{
+    ThiSinh data;
+    Node *left;
+    Node *right;
+};
+
+typedef Node* Tree;
+
+//Khai bao ham
+void khoiTao(Tree &T);
+Node* taoNode(ThiSinh x);
+void themNode(Tree &T,ThiSinh x);
+void duyetGiamDan(Tree T);
+
+//===chuong trinh chinh===
+int main()
+{
+    //Khai bao tep vao
+    ifstream fin("thisinh.txt");
+
+    //Khai bao cay
+    Tree T;
+
+    //Khoi tao cay
+    khoiTao(T);
+
+    //Doc so luong thi sinh
+    int n;
+    fin>>n;
+    fin.ignore();
+
+    //Doc du lieu tu tep vao cay
+    for(int i=0;i<n;i++)
+    {
+        ThiSinh x;
+
+        getline(fin,x.soBaoDanh);
+        getline(fin,x.hoTen);
+        getline(fin,x.gioiTinh);
+        fin>>x.diemThi;
+        fin.ignore();
+
+        themNode(T,x);
+    }
+
+    //Dua danh sach thi sinh nam theo diem giam dan
+    cout<<"Danh sach thi sinh nam theo diem thi giam dan:\n";
+    duyetGiamDan(T);
+
+    cout<<endl;
+    return 0;
+}
+
+//===dinh nghia ham===
+
+//Ham khoi tao cay
+void khoiTao(Tree &T)
+{
+    T = NULL;
+}
+
+//Ham tao node
+Node* taoNode(ThiSinh x)
+{
+    Node *p = new Node;
+
+    p->data = x;
+    p->left = NULL;
+    p->right = NULL;
+
+    return p;
+}
+
+//Ham them node vao cay
+void themNode(Tree &T,ThiSinh x)
+{
+    //Neu cay rong
+    if(T==NULL)
+    {
+        T = taoNode(x);
+    }
+    else
+    {
+        //Nho hon -> sang trai
+        if(x.diemThi < T->data.diemThi)
+            themNode(T->left,x);
+
+        //Lon hon -> sang phai
+        else if(x.diemThi > T->data.diemThi)
+            themNode(T->right,x);
+    }
+}
+
+//Ham duyet giam dan
+void duyetGiamDan(Tree T)
+{
+    if(T!=NULL)
+    {
+        //Duyet phai
+        duyetGiamDan(T->right);
+
+        //In thi sinh nam
+        if(T->data.gioiTinh == "Nam")
+        {
+            cout<<T->data.soBaoDanh<<endl;
+            cout<<T->data.hoTen<<endl;
+            cout<<T->data.gioiTinh<<endl;
+            cout<<T->data.diemThi<<endl;
+            cout<<endl;
+        }
+
+        //Duyet trai
+        duyetGiamDan(T->left);
+    }
+}
