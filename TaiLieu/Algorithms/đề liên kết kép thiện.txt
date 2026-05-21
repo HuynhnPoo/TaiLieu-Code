@@ -2,6 +2,7 @@
 //MaSV: 652231
 //Lop: K65CNPMA
 //De: 34
+Cài đặt và sử dụng danh sách liên kết kép có phần tử dữ liệu là kiểu cấu trúc mặt hàng. mỗi mặt hàng có thông tin về tên hàng số lượng đơn giá. sử dung dslkk đã cài đặt cho bài toán cho tệp mathang.txt chưa danh sach n mat hang; doc danh sách n mặt hàng từ tệp lưu vào dslkk theo thứu tự đọc vào từ tệp đưa danh sách mặt hàng tỏng dslkk ra màn hình tìm và đưa mặt hàng trong dslkk có sô lượng nhỏ nhất
 /*
 Bài 34(thctdlgtbai34.cpp). Cài đặt và sử dụng danh sách liên kết kép
 có phần tử dữ liệu là kiểu cấu trúc mặt hàng.
