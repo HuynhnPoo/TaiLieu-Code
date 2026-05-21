@@ -2,14 +2,23 @@
 //MaSV: 652231
 //Lop: K65CNPMA
 //De: 34
+/*
+Cài đặt danh sách liên kết kép lưu trữ mặt hàng:
+- tên hàng
+- số lượng
+- đơn giá
+
+Đọc từ file mathang.txt
+In danh sách
+Tìm mặt hàng có số lượng nhỏ nhất
+*/
 
 #include<iostream>
 #include<fstream>
-#include<stdio.h>
 
 using namespace std;
 
-//Cau truc mat hang
+//=== CAU TRUC ===
 struct MatHang
 {
     string tenHang;
@@ -17,7 +26,6 @@ struct MatHang
     float donGia;
 };
 
-//Node
 struct Node
 {
     MatHang data;
@@ -25,21 +33,20 @@ struct Node
     Node *next;
 };
 
-//DSLKK
 struct DSLKK
 {
     Node *head;
     Node *tail;
 };
 
-//Khai bao ham
+//=== HAM ===
 void khoiTao(DSLKK &ds);
 Node* taoNode(MatHang mh);
-void themCuoi(DSLKK &ds,MatHang mh);
+void themCuoi(DSLKK &ds, MatHang mh);
 void hienDS(DSLKK ds);
-MatHang timMin(DSLKK ds);
+MatHang timSoLuongMatHang(DSLKK ds);
 
-//===MAIN===
+//=== MAIN ===
 int main()
 {
     ifstream fin("mathang.txt");
@@ -48,35 +55,35 @@ int main()
     khoiTao(ds);
 
     int n;
-    fin>>n;
+    fin >> n;
     fin.ignore();
 
-    for(int i=0;i<n;i++)
+    for(int i = 0; i < n; i++)
     {
         MatHang mh;
 
-        getline(fin,mh.tenHang);
-        fin>>mh.soLuong;
-        fin>>mh.donGia;
+        getline(fin, mh.tenHang);
+        fin >> mh.soLuong;
+        fin >> mh.donGia;
         fin.ignore();
 
-        themCuoi(ds,mh);
+        themCuoi(ds, mh);
     }
 
-    cout<<"Danh sach mat hang:\n";
+    cout << "DANH SACH MAT HANG:\n";
     hienDS(ds);
 
-    MatHang mhMin = timMin(ds);
+    MatHang matHang = timSoLuongMatHang(ds);
 
-    cout<<"\nMat hang co so luong nho nhat:\n";
-    cout<<mhMin.tenHang<<endl;
-    cout<<mhMin.soLuong<<endl;
-    cout<<mhMin.donGia<<endl;
+    cout << "\nMAT HANG CO SO LUONG NHO NHAT:\n";
+    cout << matHang.tenHang << endl;
+    cout << matHang.soLuong << endl;
+    cout << matHang.donGia << endl;
 
     return 0;
 }
 
-//===HAM===
+//=== HAM XU LY ===
 
 void khoiTao(DSLKK &ds)
 {
@@ -93,7 +100,7 @@ Node* taoNode(MatHang mh)
     return p;
 }
 
-void themCuoi(DSLKK &ds,MatHang mh)
+void themCuoi(DSLKK &ds, MatHang mh)
 {
     Node *p = taoNode(mh);
 
@@ -115,29 +122,29 @@ void hienDS(DSLKK ds)
 
     while(p != NULL)
     {
-        cout<<p->data.tenHang<<endl;
-        cout<<p->data.soLuong<<endl;
-        cout<<p->data.donGia<<endl;
-        cout<<endl;
+        cout << p->data.tenHang << endl;
+        cout << p->data.soLuong << endl;
+        cout << p->data.donGia << endl;
+        cout << endl;
 
         p = p->next;
     }
 }
 
-MatHang timMin(DSLKK ds)
+MatHang timSoLuongMatHang(DSLKK ds)
 {
     Node *p = ds.head;
 
-    MatHang mhMin = p->data;
+    MatHang matHang = p->data;
     p = p->next;
 
     while(p != NULL)
     {
-        if(p->data.soLuong < mhMin.soLuong)
-            mhMin = p->data;
+        if(p->data.soLuong < matHang.soLuong)
+            matHang = p->data;
 
         p = p->next;
     }
 
-    return mhMin;
+    return matHang;
 }
