@@ -1,0 +1,213 @@
+
+//Ho ten: Nguyen Duc Minh
+//MaSV: 637747
+//Lop: K63ATTT
+//De:
+/*
+Bài 15(thctdlgtbai15.cpp): Cài đặt và sử dụng danh sách liên kết kép cho bài toán sau:
+Đọc danh sách mặt hàng từ tệp văn bản 'mathang.txt' lưu vào DSLKK, mỗi mặt hàng có thông tin
+về mã hàng, tên hàng, số lượng, đơn giá. Đưa danh sách mặt hàng ra màn hình kèm theo
+số tiền của từng mặt hàng và tổng số tiền của tất cả mặt hàng.
+Xóa mặt hàng có mã nhập vào từ bàn phím.
+*/
+
+#include<iostream>
+#include<fstream>
+#include<stdio.h>
+#include<string>
+
+using namespace std;
+
+//Khai bao kieu cau truc mat hang
+struct MatHang
+{
+    string maHang;
+    string tenHang;
+    int soLuong;
+    float donGia;
+};
+
+//Khai bao kieu cau truc nut nho cua DSLKK
+struct node
+{
+    MatHang infor;
+    node *left,*right;
+};
+
+//Khai bao ham cai dat cac phep toan tren DSLKK
+void DLPostInsert(node* &L,node* &R,node *M,MatHang x);
+void DLDelete(node* &L,node* &R,node *M);
+void DLDisplay(node* L,node* R);
+node* DLSearch(node *L,node *R,string maHang);
+
+//===chuong trinh chinh===
+int main()
+{
+    //Cai dat cau truc luu tru cua DSLKK
+    node *L=NULL,*R=NULL,*M;
+
+    //Khai bao tep vao
+    ifstream fin("mathang.txt");
+
+    //Khai bao bien
+    MatHang x;
+    float tongTien = 0;
+
+    //Kiem tra tep
+    if(!fin)
+    {
+        cout<<"Khong mo duoc tep mathang.txt.";
+        return 0;
+    }
+
+    //Doc danh sach mat hang tu tep vao DSLKK
+    while(fin>>x.maHang>>x.tenHang>>x.soLuong>>x.donGia)
+    {
+        DLPostInsert(L,R,R,x);
+    }
+
+    //Dua danh sach mat hang ra man hinh
+    cout<<"Danh sach mat hang:\n";
+    DLDisplay(L,R);
+
+    //Nhap ma hang can xoa
+    string maHang;
+
+    cout<<"\n\nNhap vao ma hang can xoa: ";
+    cin>>maHang;
+
+    //Tim mat hang can xoa
+    M = DLSearch(L,R,maHang);
+
+    if(M)
+    {
+        //Xoa nut M
+        DLDelete(L,R,M);
+
+        //Dua ra danh sach sau khi xoa
+        cout<<"\nDanh sach mat hang sau khi xoa mat hang co ma "
+            <<maHang<<":\n";
+
+        DLDisplay(L,R);
+    }
+    else
+    {
+        cout<<"\nTrong DSLKK khong co mat hang co ma "
+            <<maHang<<".";
+    }
+
+    cout<<endl;
+    return 0;
+}
+
+//===dinh nghia ham===
+
+//Bo sung mat hang x vao sau nut M
+void DLPostInsert(node* &L,node* &R,node *M,MatHang x)
+{
+    //1.Tao nut moi chua x
+    node *N = new node;
+
+    N->infor = x;
+    N->left = N->right = NULL;
+
+    //2.Noi nut moi vao sau nut M
+    if(R==NULL)
+        L = R = N;
+    else if(M==R)
+    {
+        N->left = M;
+        M->right = N;
+        R = N;
+    }
+    else
+    {
+        N->left = M;
+        N->right = M->right;
+        M->right->left = N;
+        M->right = N;
+    }
+}
+
+//Xoa nut M
+void DLDelete(node* &L,node* &R,node *M)
+{
+    //1.Truong hop DSLKK rong
+    if(L==NULL)
+    {
+        cout<<"Danh sach lien ket kep da rong.";
+        return;
+    }
+
+    //2.Ngat ket noi voi nut M
+    if(L==R)
+    {
+        L=R=NULL;
+    }
+    else if(M==L)
+    {
+        L = L->right;
+        L->left = NULL;
+    }
+    else if(M==R)
+    {
+        R = R->left;
+        R->right = NULL;
+    }
+    else
+    {
+        M->left->right = M->right;
+        M->right->left = M->left;
+    }
+
+    //3.Huy nut M
+    delete M;
+}
+
+//Duyet danh sach va dua mat hang ra man hinh
+void DLDisplay(node* L,node* R)
+{
+    node *P = L;
+
+    float tongTien = 0;
+
+    cout<<"Ma hang\tTen hang\tSo luong\tDon gia\t\tThanh tien\n";
+
+    while(P)
+    {
+        float thanhTien = P->infor.soLuong * P->infor.donGia;
+
+        cout<<P->infor.maHang<<"\t"
+            <<P->infor.tenHang<<"\t\t"
+            <<P->infor.soLuong<<"\t\t"
+            <<P->infor.donGia<<"\t\t"
+            <<thanhTien
+            <<endl;
+
+        tongTien = tongTien + thanhTien;
+
+        P = P->right;
+    }
+
+    cout<<"\nTong so tien cua tat ca mat hang: "
+        <<tongTien<<endl;
+}
+
+//Tim nut co ma hang bang maHang
+node* DLSearch(node *L,node *R,string maHang)
+{
+    node *P=L;
+
+    //Tim mat hang
+    while(P)
+    {
+        if(P->infor.maHang == maHang)
+            break;
+        else
+            P = P->right;
+    }
+
+    //Tra ve ket qua tim kiem
+    return P;
+}
+

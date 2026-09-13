@@ -1,0 +1,113 @@
+//Ho ten: Le Tuan Tu
+//MaSV: 652231
+//Lop: K65CNPMA
+//De:
+/*
+Bài 17(thctdlgtbai17.cpp): Cài đặt ngăn xếp sử dụng cấu trúc lưu trữ phân tán với phần tử dữ liệu
+là số nguyên. Ứng dụng ngăn xếp cho bài toán: Nhập vào một số nguyên dương, đưa ra màn hình
+từng chữ số của số nguyên, mỗi số trên một dòng.
+*/
+
+#include<iostream>
+#include<stdio.h>
+
+using namespace std;
+
+//Khai bao kieu cau truc phan tu du lieu cua ngan xep
+struct node
+{
+    int infor;
+    node *link;
+};
+
+//Khai bao ham cai dat cac phep toan tren ngan xep
+void SPush(node* &F,int x);
+int SPop(node* &F);
+bool SIsEmpty(node* F);
+
+//===chuong trinh chinh===
+int main()
+{
+    //Cai dat cau truc luu tru phan tan cua ngan xep
+    node *F=NULL;
+
+    //Khai bao bien
+    int n,x;
+
+    //Nhap so nguyen duong
+    cout<<"Nhap vao mot so nguyen duong: ";
+    cin>>n;
+
+    //Kiem tra so nguyen duong
+    if(n<=0)
+    {
+        cout<<"So vua nhap khong phai la so nguyen duong.";
+        return 0;
+    }
+
+    //Tach tung chu so va dua vao ngan xep
+    x=n;
+
+    while(x>0)
+    {
+        SPush(F,x%10);
+        x=x/10;
+    }
+
+    //Lay tung chu so tu ngan xep dua ra man hinh
+    cout<<"\nCac chu so cua so "<<n<<" la:\n";
+
+    while(!SIsEmpty(F))
+    {
+        cout<<SPop(F)<<endl;
+    }
+
+    cout<<endl;
+    return 0;
+}
+
+//===dinh nghia ham===
+
+void SPush(node* &F,int x)
+{
+    //1.Tao nut moi chua x
+    node *N = new node;
+    N->infor = x;
+
+    //2.Noi nut moi vao dau ngan xep
+    N->link = F;
+
+    //3.Cho F tro sang nut moi
+    F = N;
+}
+
+int SPop(node* &F)
+{
+    int tg;
+
+    //1.Kiem tra ngan xep rong
+    if(F==NULL)
+    {
+        cout<<"Ngan xep da rong.";
+        return 0;
+    }
+
+    //2.Giu lai phan tu dau ngan xep
+    tg = F->infor;
+
+    //3.Giu lai nut dau ngan xep
+    node *P = F;
+
+    //4.Cho F tro sang nut dung sau
+    F = F->link;
+
+    //5.Huy nut va tra ve phan tu da loai bo
+    delete P;
+
+    return tg;
+}
+
+bool SIsEmpty(node* F)
+{
+    return F==NULL;
+}

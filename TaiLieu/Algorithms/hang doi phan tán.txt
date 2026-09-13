@@ -1,0 +1,219 @@
+//Ho ten: Le Tuan Tu
+//MaSV: 652231
+//Lop: K65CNPMA
+//De:
+/*
+Bài 19(thctdlgtbai19.cpp): Cài đặt và sử dụng hàng đợi lưu trữ phân tán cho bài toán sau:
+Tính tổng 2 đa thức tuyến tính Pn(x) và Qm(x).
+Pn(x) = a0 + a1x + a2x^2 + a3x^3 +...+ anx^n.
+Qm(x) = b0 + b1x + b2x^2 + b3x^3 + ... + bmx^m.
+Đa thức Pn(x) và Qm(x) đọc vào từ tệp văn bản.
+Đưa ra màn hình các đa thức Pn(x), Qm(x) và Pn(x)+Qm(x).
+Nhập vào x, tính Pn(x)+Qm(x).
+*/
+
+#include<iostream>
+#include<fstream>
+#include<stdio.h>
+#include<math.h>
+
+using namespace std;
+
+//Khai bao kieu cau truc phan tu du lieu cua hang doi
+struct node
+{
+    float infor;
+    node *link;
+};
+
+//Khai bao ham cai dat cac phep toan tren hang doi
+void QInsert(node* &F,node* &R,float x);
+float QDelete(node* &F,node* &R);
+bool QIsEmpty(node* F,node* R);
+
+void DisplayPolynomial(node *F,int n);
+float CalculatePolynomial(node *F,int n,float x);
+
+//===chuong trinh chinh===
+int main()
+{
+    //Cai dat cau truc luu tru phan tan cua 2 hang doi P va Q
+    node *FP=NULL,*RP=NULL;
+    node *FQ=NULL,*RQ=NULL;
+
+    //Khai bao tep vao
+    ifstream fin("daithuc.txt");
+
+    //Khai bao bien
+    int n,m;
+    float a,x;
+
+    //Kiem tra tep
+    if(!fin)
+    {
+        cout<<"Khong mo duoc tep daithuc.txt.";
+        return 0;
+    }
+
+    //Doc bac cua da thuc P
+    fin>>n;
+
+    //Doc cac he so cua da thuc P vao hang doi
+    for(int i=0;i<=n;i++)
+    {
+        fin>>a;
+        QInsert(FP,RP,a);
+    }
+
+    //Doc bac cua da thuc Q
+    fin>>m;
+
+    //Doc cac he so cua da thuc Q vao hang doi
+    for(int i=0;i<=m;i++)
+    {
+        fin>>a;
+        QInsert(FQ,RQ,a);
+    }
+
+    //Dua da thuc P ra man hinh
+    cout<<"Da thuc Pn(x): ";
+    DisplayPolynomial(FP,n);
+
+    //Dua da thuc Q ra man hinh
+    cout<<"\nDa thuc Qm(x): ";
+    DisplayPolynomial(FQ,m);
+
+    //Tao hang doi luu da thuc tong
+    node *FS=NULL,*RS=NULL;
+
+    //Tao tong P + Q
+    node *TP=FP;
+    node *TQ=FQ;
+
+    //Lay tung he so tu P va Q de cong
+    for(int i=0;i<=max(n,m);i++)
+    {
+        float aP=0;
+        float aQ=0;
+
+        if(i<=n)
+            aP=QDelete(TP,RP);
+
+        if(i<=m)
+            aQ=QDelete(TQ,RQ);
+
+        QInsert(FS,RS,aP+aQ);
+    }
+
+    //Dua da thuc P + Q ra man hinh
+    cout<<"\nDa thuc Pn(x) + Qm(x): ";
+    DisplayPolynomial(FS,max(n,m));
+
+    //Nhap x
+    cout<<"\n\nNhap x: ";
+    cin>>x;
+
+    //Tinh P(x) + Q(x)
+    float ketQua = CalculatePolynomial(FS,max(n,m),x);
+
+    cout<<"\nGia tri Pn("<<x<<") + Qm("<<x<<") = "
+        <<ketQua<<endl;
+
+    cout<<endl;
+    return 0;
+}
+
+//===dinh nghia ham===
+
+void QInsert(node* &F,node* &R,float x)
+{
+    //1.Tao nut moi chua x
+    node *N = new node;
+    N->infor = x;
+    N->link = NULL;
+
+    //2.Noi nut moi vao sau nut R
+    if(R==NULL)
+        F = N;
+    else
+        R->link = N;
+
+    //3.Cho R tro sang nut moi
+    R = N;
+}
+
+float QDelete(node* &F,node* &R)
+{
+    float tg=0;
+
+    //1.Kiem tra hang doi rong
+    if(F==NULL)
+    {
+        cout<<"Hang doi da rong.";
+        return tg;
+    }
+
+    //2.Giu lai phan tu dau hang doi
+    tg = F->infor;
+
+    node *P = F;
+
+    //3.Cho F tro sang nut dung sau
+    if(F==R)
+        F = R = NULL;
+    else
+        F = F->link;
+
+    //4.Huy nut va tra ve phan tu da loai bo
+    delete P;
+
+    return tg;
+}
+
+bool QIsEmpty(node* F,node* R)
+{
+    return F==NULL;
+}
+
+//Dua da thuc ra man hinh
+void DisplayPolynomial(node *F,int n)
+{
+    node *P=F;
+
+    for(int i=0;i<=n;i++)
+    {
+        float a=P->infor;
+
+        if(i==0)
+            cout<<a;
+        else
+        {
+            if(a>=0)
+                cout<<" + "<<a;
+            else
+                cout<<" - "<<-a;
+
+            if(i==1)
+                cout<<"x";
+            else
+                cout<<"x^"<<i;
+        }
+
+        P=P->link;
+    }
+}
+
+//Tinh gia tri da thuc tai x
+float CalculatePolynomial(node *F,int n,float x)
+{
+    node *P=F;
+    float ketQua=0;
+
+    for(int i=0;i<=n;i++)
+    {
+        ketQua = ketQua + P->infor*pow(x,i);
+        P=P->link;
+    }
+
+    return ketQua;
+}

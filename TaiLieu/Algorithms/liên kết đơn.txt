@@ -1,0 +1,206 @@
+//Ho ten: Le Tuan Tu
+//MaSV: 632231
+//Lop: K63CNPM
+//De: 
+/*
+Bài 13(thctdlgtbai13.cpp): Cài đặt và sử dụng danh sách liên kết đơn cho bài toán sau:
+Đọc danh sách sinh viên từ tệp văn bản 'sinhvien.txt' lưu vào DSLKD, mỗi sinh viên có thông tin
+về mã sinh viên, họ tên, lớp, điểm tbc. Xóa sinh viên có mã nhập vào từ bàn phím.
+Tìm và đưa ra màn hình các sinh viên có điểm tbc >= 6.5.
+*/
+
+#include<iostream>
+#include<fstream>
+#include<stdio.h>
+#include<string>
+
+using namespace std;
+
+//Khai bao kieu cau truc nut nho cua DSLKD
+struct SinhVien
+{
+    string maSV;
+    string hoTen;
+    string lop;
+    float diemTBC;
+};
+
+struct node
+{
+    SinhVien infor;
+    node *link;
+};
+
+//Khai bao ham cai dat cac phep toan tren DSLKD
+node* SLPostInsert(node* &F,node *M,SinhVien x);
+void SLDelete(node* &F,node *M);
+void SLDisplay(node* F);
+node* SLSearch(node *F,string maSV);
+void SLDisplayDiem(node *F,float diem);
+
+//===chuong trinh chinh===
+int main()
+{
+    //Cai dat cau truc luu tru phan tan cua DSLKD P
+    node *P=NULL;
+
+    //Khai bao tep doc vao
+    ifstream fin("sinhvien.txt");
+
+    //Khai bao bien
+    SinhVien x;
+    node *M;
+
+    //Kiem tra tep
+    if(!fin)
+    {
+        cout<<"Khong mo duoc tep sinhvien.txt.";
+        return 0;
+    }
+
+    //Doc danh sach sinh vien tu tep bo sung vao cuoi DSLKD P
+    M = NULL;
+    while(fin>>x.maSV)
+    {
+        fin.ignore();
+        getline(fin,x.hoTen,' ');
+        fin>>x.lop>>x.diemTBC;
+
+        M = SLPostInsert(P,M,x);
+    }
+
+    //Dua ra danh sach sinh vien trong DSLKD P
+    cout<<"Danh sach sinh vien trong DSLKD P la:\n";
+    SLDisplay(P);
+
+    //Nhap ma sinh vien can xoa
+    string maSV;
+    cout<<"\n\nNhap vao ma sinh vien can xoa: ";
+    cin>>maSV;
+
+    M = SLSearch(P,maSV);
+
+    if(M)
+    {
+        //Xoa nut M
+        SLDelete(P,M);
+
+        //Dua ra P sau khi xoa
+        cout<<"\nDanh sach sinh vien sau khi xoa sinh vien co ma "
+            <<maSV<<":\n";
+        SLDisplay(P);
+    }
+    else
+        cout<<"\nTrong DSLKD P khong co sinh vien co ma "<<maSV<<".";
+
+    //Tim va dua ra cac sinh vien co diem TBC >= 6.5
+    cout<<"\n\nDanh sach sinh vien co diem TBC >= 6.5:\n";
+    SLDisplayDiem(P,6.5);
+
+    cout<<endl;
+    return 0;
+}
+
+//===dinh nghia ham===
+
+//Bo sung sinh vien x vao sau nut M
+node* SLPostInsert(node* &F,node *M,SinhVien x)
+{
+    //1.Tao nut nho moi chua x
+    node *N = new node;
+    N->infor = x;
+    N->link = NULL;
+
+    //2.Noi nut moi vao sau nut M
+    if(F==NULL)
+        F = N;
+    else
+    {
+        N->link = M->link;
+        M->link = N;
+    }
+
+    //3.Tra ve dia chi nut moi bo sung
+    return N;
+}
+
+//Xoa nut M
+void SLDelete(node* &F,node *M)
+{
+    //1.Truong hop DSLKD rong
+    if(F==NULL)
+    {
+        cout<<"DSLKD da rong.";
+        return;
+    }
+
+    //2.Ngat ket noi voi nut M
+    if(M==F)
+        F = F->link;
+    else
+    {
+        //Tim nut P truoc nut M
+        node *P=F;
+        while(P->link != M)
+            P = P->link;
+
+        //Noi nut truoc M voi nut sau M
+        P->link = M->link;
+    }
+
+    //3.Huy nut M
+    delete M;
+}
+
+//Duyet danh sach de dua cac sinh vien ra man hinh
+void SLDisplay(node* F)
+{
+    node *P=F;
+
+    while(P)
+    {
+        cout<<"Ma SV: "<<P->infor.maSV
+            <<" | Ho ten: "<<P->infor.hoTen
+            <<" | Lop: "<<P->infor.lop
+            <<" | Diem TBC: "<<P->infor.diemTBC
+            <<endl;
+
+        P = P->link;
+    }
+}
+
+//Tim nut co ma sinh vien bang maSV
+node* SLSearch(node *F,string maSV)
+{
+    //Tim nut co ma sinh vien bang maSV
+    node *P=F;
+
+    while(P)
+        if(P->infor.maSV==maSV)
+            break;
+        else
+            P = P->link;
+
+    //Tra ve ket qua tim kiem
+    return P;
+}
+
+//Dua ra cac sinh vien co diem TBC >= diem
+void SLDisplayDiem(node *F,float diem)
+{
+    node *P=F;
+
+    while(P)
+    {
+        if(P->infor.diemTBC >= diem)
+        {
+            cout<<"Ma SV: "<<P->infor.maSV
+                <<" | Ho ten: "<<P->infor.hoTen
+                <<" | Lop: "<<P->infor.lop
+                <<" | Diem TBC: "<<P->infor.diemTBC
+                <<endl;
+        }
+
+        P = P->link;
+    }
+}
