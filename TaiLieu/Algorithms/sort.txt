@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <fstream>
 using namespace std;
@@ -8,6 +9,60 @@ struct SinhVien {
     int tuoi;
     float diem;
 };
+
+// ========== Hàm Swap ==========
+void Swap(SinhVien &a, SinhVien &b);
+// ========== 1. Selection Sort ==========
+void SelectionSort(SinhVien a[], int n) ;
+// ========== 2. Bubble Sort ==========
+void bubbleSort(SinhVien a[], int n);
+// ========== 3. Insertion Sort ==========
+void insertionSort(SinhVien a[], int n) ;
+// ========== 4. Quick Sort ==========
+void quickSort(SinhVien a[], int left, int right) ;
+// ========== 5. Heap Sort ==========
+void heapify(SinhVien a[], int n, int i);
+void heapSort(SinhVien a[], int n);
+// ========== Hàm hiển thị ==========
+void hienThi(SinhVien sv[], int n);
+// ========== MAIN ==========
+int main() {
+    int n;
+    ifstream fin("sinhvien.txt");
+
+    if (!fin) {
+        cout << "Khong mo duoc file sinhvien.txt!\n";
+        return 1;
+    }
+
+    fin >> n;
+    cout << "So sinh vien: " << n << endl;
+
+    SinhVien *sv = new SinhVien[n];
+
+    for (int i = 0; i < n; i++) {
+        fin >> sv[i].maSV >> sv[i].hoTen >> sv[i].tuoi >> sv[i].diem;
+    }
+    fin.close();
+
+    cout << "\n===== Danh sach ban dau =====\n";
+    hienThi(sv, n);
+
+    // ========== Chọn 1 hàm sắp xếp bên dưới ==========
+    // SelectionSort(sv, n);
+    // bubbleSort(sv, n); 
+    // insertionSort(sv, n);
+    // quickSort(sv, 0, n - 1);
+    heapSort(sv, n);          // đang dùng Heap Sort
+
+    cout << "\n===== Danh sach sau khi sap xep theo diem tang dan =====\n";
+    hienThi(sv, n);
+
+    delete[] sv;
+    return 0;
+}
+
+
 
 // ========== Hàm Swap ==========
 void Swap(SinhVien &a, SinhVien &b) {
@@ -112,41 +167,4 @@ void hienThi(SinhVien sv[], int n) {
              << " | Tuoi: " << sv[i].tuoi
              << " | Diem: " << sv[i].diem << endl;
     }
-}
-
-// ========== MAIN ==========
-int main() {
-    int n;
-    ifstream fin("sinhvien.txt");
-
-    if (!fin) {
-        cout << "Khong mo duoc file sinhvien.txt!\n";
-        return 1;
-    }
-
-    fin >> n;
-    cout << "So sinh vien: " << n << endl;
-
-    SinhVien *sv = new SinhVien[n];
-
-    for (int i = 0; i < n; i++) {
-        fin >> sv[i].maSV >> sv[i].hoTen >> sv[i].tuoi >> sv[i].diem;
-    }
-    fin.close();
-
-    cout << "\n===== Danh sach ban dau =====\n";
-    hienThi(sv, n);
-
-    // ========== Chọn 1 hàm sắp xếp bên dưới ==========
-    // SelectionSort(sv, n);
-    // bubbleSort(sv, n); 
-    // insertionSort(sv, n);
-    // quickSort(sv, 0, n - 1);
-    heapSort(sv, n);          // đang dùng Heap Sort
-
-    cout << "\n===== Danh sach sau khi sap xep theo diem tang dan =====\n";
-    hienThi(sv, n);
-
-    delete[] sv;
-    return 0;
 }
