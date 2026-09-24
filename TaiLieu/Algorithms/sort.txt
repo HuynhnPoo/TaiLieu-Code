@@ -1,0 +1,152 @@
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+struct SinhVien {
+    char maSV[8];
+    char hoTen[30];
+    int tuoi;
+    float diem;
+};
+
+// ========== Hàm Swap ==========
+void Swap(SinhVien &a, SinhVien &b) {
+    SinhVien temp = a;
+    a = b;
+    b = temp;
+}
+
+// ========== 1. Selection Sort ==========
+void SelectionSort(SinhVien a[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        int min = i;
+        for (int j = i + 1; j < n; j++) {
+            if (a[j].diem < a[min].diem) {
+                min = j;
+            }
+        }
+        if (min != i) {
+            Swap(a[i], a[min]);
+        }
+    }
+}
+
+// ========== 2. Bubble Sort ==========
+void bubbleSort(SinhVien a[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (a[j].diem > a[j + 1].diem) {
+                Swap(a[j], a[j + 1]);
+            }
+        }
+    }
+}
+
+// ========== 3. Insertion Sort ==========
+void insertionSort(SinhVien a[], int n) {
+    for (int i = 1; i < n; i++) {
+        SinhVien key = a[i];
+        int pos = i - 1;
+        while (pos >= 0 && a[pos].diem > key.diem) {
+            a[pos + 1] = a[pos];
+            pos--;
+        }
+        a[pos + 1] = key;
+    }
+}
+
+// ========== 4. Quick Sort ==========
+void quickSort(SinhVien a[], int left, int right) {
+    if (left >= right) return;
+
+    int i = left, j = right;
+    float pivot = a[(left + right) / 2].diem;
+
+    while (i <= j) {
+        while (a[i].diem < pivot) i++;
+        while (a[j].diem > pivot) j--;
+
+        if (i <= j) {
+            Swap(a[i], a[j]);
+            i++;
+            j--;
+        }
+    }
+
+    if (left < j) quickSort(a, left, j);
+    if (i < right) quickSort(a, i, right);
+}
+
+// ========== 5. Heap Sort ==========
+void heapify(SinhVien a[], int n, int i) {
+    int largest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
+
+    if (left < n && a[left].diem > a[largest].diem)
+        largest = left;
+    if (right < n && a[right].diem > a[largest].diem)
+        largest = right;
+
+    if (largest != i) {
+        Swap(a[i], a[largest]);
+        heapify(a, n, largest);
+    }
+}
+
+void heapSort(SinhVien a[], int n) {
+    for (int i = n / 2 - 1; i >= 0; i--)
+        heapify(a, n, i);
+
+    for (int i = n - 1; i > 0; i--) {
+        Swap(a[0], a[i]);
+        heapify(a, i, 0);
+    }
+}
+
+// ========== Hàm hiển thị ==========
+void hienThi(SinhVien sv[], int n) {
+    for (int i = 0; i < n; i++) {
+        cout << "Ma SV: " << sv[i].maSV
+             << " | Ten: " << sv[i].hoTen
+             << " | Tuoi: " << sv[i].tuoi
+             << " | Diem: " << sv[i].diem << endl;
+    }
+}
+
+// ========== MAIN ==========
+int main() {
+    int n;
+    ifstream fin("sinhvien.txt");
+
+    if (!fin) {
+        cout << "Khong mo duoc file sinhvien.txt!\n";
+        return 1;
+    }
+
+    fin >> n;
+    cout << "So sinh vien: " << n << endl;
+
+    SinhVien *sv = new SinhVien[n];
+
+    for (int i = 0; i < n; i++) {
+        fin >> sv[i].maSV >> sv[i].hoTen >> sv[i].tuoi >> sv[i].diem;
+    }
+    fin.close();
+
+    cout << "\n===== Danh sach ban dau =====\n";
+    hienThi(sv, n);
+
+    // ========== Chọn 1 hàm sắp xếp bên dưới ==========
+    // SelectionSort(sv, n);
+    // bubbleSort(sv, n); 
+    // insertionSort(sv, n);
+    // quickSort(sv, 0, n - 1);
+    heapSort(sv, n);          // đang dùng Heap Sort
+
+    cout << "\n===== Danh sach sau khi sap xep theo diem tang dan =====\n";
+    hienThi(sv, n);
+
+    delete[] sv;
+    return 0;
+}

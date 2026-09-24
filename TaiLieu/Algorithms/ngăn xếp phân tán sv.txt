@@ -1,0 +1,180 @@
+ngăn xếp phân tán 
+//Ho ten: Nguyen Cong Huan
+//Ma SV: 637827
+//Lop: K63TH
+//De: 11
+
+/*
+Cài đặt và sử dụng ngăn xếp lưu trữ phân tán cho bài toán:
+Cho tệp văn bản 'sinhvien.txt' chứa danh sách n sinh viên, mỗi sinh viên có
+thông tin về mã sinh viên, họ tên, giới tính, điểm TBC. Danh sách sinh viên
+trên tệp đã được sắp xếp theo điểm TBC giảm dần. Đọc danh sách sinh viên
+từ tệp, nếu là sinh viên nữ thì đưa ra màn hình, nếu là sinh viên nam thì
+đưa vào ngăn xếp. Đưa danh sách sinh viên nam từ ngăn xếp ra màn hình.
+Đưa ra màn hình sinh viên nam có điểm TBC cao nhất.
+*/
+
+#include<iostream>
+#include<fstream>
+#include<string.h>
+using namespace std;
+
+//Khai bao cau truc sinh vien
+struct SinhVien
+{
+    char maSV[10];
+    char hoTen[31];
+    char gioiTinh[6];
+    float diemTBC;
+};
+
+//Khai bao cau truc nut cua ngan xep
+struct Node
+{
+    SinhVien data;
+    Node *next;
+};
+
+//Khai bao ham cai dat cac phep toan tren ngan xep
+void Push(Node *&S,SinhVien x);
+SinhVien Pop(Node *&S);
+bool IsEmpty(Node *S);
+
+//===chuong trinh chinh===
+int main()
+{
+    //Cai dat cau truc luu tru phan tan cua ngan xep
+    Node *S=NULL;
+
+    //Khai bao tep vao
+    ifstream fin("sinhvien.txt");
+
+    //Khai bao bien
+    int n;
+    SinhVien x;
+    SinhVien svNamDau;
+    bool coNam=false;
+
+    //Doc so luong sinh vien tu tep
+    fin>>n;
+
+    //Doc n sinh vien tu tep
+    for(int i=0;i<n;i++)
+    {
+        //Doc ky tu Enter de dua con tro tep xuong dong duoi
+        fin.ignore();
+
+        //Doc ma sinh vien
+        fin.getline(x.maSV,sizeof(x.maSV),'\t');
+
+        //Doc ho ten
+        fin.getline(x.hoTen,sizeof(x.hoTen),'\t');
+
+        //Doc gioi tinh
+        fin.getline(x.gioiTinh,sizeof(x.gioiTinh),'\t');
+
+        //Doc diem TBC
+        fin>>x.diemTBC;
+
+        //Neu la sinh vien nu thi dua ra man hinh
+        if(strcmp(x.gioiTinh,"Nu")==0)
+        {
+            cout<<x.maSV<<'\t'
+                <<x.hoTen<<'\t'
+                <<x.gioiTinh<<'\t'
+                <<x.diemTBC<<endl;
+        }
+        else
+        {
+            //Neu la sinh vien nam thi dua vao ngan xep
+            Push(S,x);
+
+            //Sinh vien nam dau tien co diem cao nhat
+            if(!coNam)
+            {
+                svNamDau=x;
+                coNam=true;
+            }
+        }
+    }
+
+    //Dua danh sach sinh vien nam tu ngan xep ra man hinh
+    cout<<"\nDanh sach sinh vien nam:\n";
+
+    while(!IsEmpty(S))
+    {
+        x=Pop(S);
+
+        cout<<x.maSV<<'\t'
+            <<x.hoTen<<'\t'
+            <<x.gioiTinh<<'\t'
+            <<x.diemTBC<<endl;
+    }
+
+    //Dua ra sinh vien nam co diem TBC cao nhat
+    if(coNam)
+    {
+        cout<<"\nSinh vien nam co diem TBC cao nhat:\n";
+
+        cout<<svNamDau.maSV<<'\t'
+            <<svNamDau.hoTen<<'\t'
+            <<svNamDau.gioiTinh<<'\t'
+            <<svNamDau.diemTBC<<endl;
+    }
+    else
+    {
+        cout<<"\nKhong co sinh vien nam.";
+    }
+
+    cout<<endl;
+    return 0;
+}
+
+//===dinh nghia ham===
+
+void Push(Node *&S,SinhVien x)
+{
+    //1.Tao nut moi
+    Node *p=new Node;
+
+    //2.Dua du lieu vao nut
+    p->data=x;
+
+    //3.Moc nut moi vao dau ngan xep
+    p->next=S;
+
+    //4.Cap nhat dinh ngan xep
+    S=p;
+}
+
+SinhVien Pop(Node *&S)
+{
+    SinhVien tg;
+
+    //1.Kiem tra ngan xep rong
+    if(S==NULL)
+    {
+        cout<<"Ngan xep da rong.";
+        return tg;
+    }
+
+    //2.Giu lai phan tu dau ngan xep
+    tg=S->data;
+
+    //3.Tao con tro tam tro den nut dau
+    Node *p=S;
+
+    //4.Cap nhat dinh ngan xep
+    S=S->next;
+
+    //5.Giai phong nut dau
+    delete p;
+
+    //6.Tra ve phan tu vua lay ra
+    return tg;
+}
+
+bool IsEmpty(Node *S)
+{
+    return S==NULL;
+}
